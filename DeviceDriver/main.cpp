@@ -18,6 +18,21 @@ public:
 		int data = driver.read(address);
 		EXPECT_EQ(expected, data);
 	}
+	void readFailTest(int expected, int address) {
+		try {
+			readTest(expected, address);
+			FAIL();
+		}
+		catch (ReadFailException& e) {
+			EXPECT_EQ("data is invalid", e.what());
+		}
+	}
+
+	void setReadSuccessCase(int value, int address) {
+		EXPECT_CALL(hardware, read(address))
+			.Times(5)
+			.WillRepeatedly(Return(value));
+	}
 
 	FlashMemoryDeviceMock hardware;
 	DeviceDriver driver;
@@ -27,8 +42,7 @@ TEST_F(DeviceDriverFixture, ReadFromHW_0x00_0x41) {
 	int address = 0x00;
 	int expected = 0x41;
 
-	EXPECT_CALL(hardware, read(address))
-		.WillRepeatedly(Return(expected));
+	setReadSuccessCase(expected, address);
 
 	readTest(expected, address);
 }
@@ -37,8 +51,7 @@ TEST_F(DeviceDriverFixture, ReadFromHW_0x04_0x42) {
 	int address = 0x04;
 	int expected = 0x42;
 
-	EXPECT_CALL(hardware, read(address))
-		.WillRepeatedly(Return(expected));
+	setReadSuccessCase(expected, address);
 
 	readTest(expected, address);
 }
@@ -46,18 +59,13 @@ TEST_F(DeviceDriverFixture, ReadFromHW_0x04_0x42) {
 TEST_F(DeviceDriverFixture, ReadFromHW_Fail) {
 	int address = 0x04;
 	int expected = 0x42;
+	int invalidData = 0x41;
 
 	EXPECT_CALL(hardware, read(address))
-		.WillOnce(Return(0x41))
+		.WillOnce(Return(invalidData))
 		.WillRepeatedly(Return(expected));
 
-	try {
-		readTest(expected, address);
-		FAIL();
-	}
-	catch (ReadFailException& e) {
-		EXPECT_EQ("data is invalid", e.what());
-	}
+	readFailTest(expected, address);
 }
 
 int main() {
