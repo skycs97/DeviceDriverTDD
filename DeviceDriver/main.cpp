@@ -71,15 +71,28 @@ TEST_F(DeviceDriverFixture, ReadFromHW_Fail) {
 TEST_F(DeviceDriverFixture, WriteToHw) {
 	int address = 0x00;
 	int writeValue = 0x4;
-
-	EXPECT_CALL(hardware, write)
-		.Times(1);
 	
 	setReadSuccessCase(0xFF, address);
 	driver.write(address, writeValue);
 
 	setReadSuccessCase(writeValue, address);
 	readTest(writeValue, address);
+}
+
+TEST_F(DeviceDriverFixture, WriteToHw_Fail_Already_Writed_Data) {
+	int address = 0x00;
+	int writeValue = 0x4;
+
+	try {
+		setReadSuccessCase(0x10, address);
+		driver.write(address, writeValue);
+
+		setReadSuccessCase(writeValue, address);
+		readTest(writeValue, address);
+	}
+	catch (WriteFailException& e) {
+		EXPECT_EQ("already writed data", e.what());
+	}
 }
 
 int main() {

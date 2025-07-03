@@ -20,3 +20,10 @@ public:
     ReadFailException() = default;
     virtual const char* what() const override;
 };
+
+
+class WriteFailException : public std::exception {
+public:
+    WriteFailException() = default;
+    virtual const char* what() const override;
+};
