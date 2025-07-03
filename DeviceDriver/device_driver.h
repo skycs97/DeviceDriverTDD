@@ -9,10 +9,13 @@ public:
     int read(long address);
     void write(long address, int data);
 
+    bool isWriteable(int readData);
+
 protected:
     FlashMemoryDevice* m_hardware;
 private:
     constexpr static int READ_REPEAT_COUNT_FOR_CHECK = 4;
+    constexpr static int EMPTY_DATA = 0xFF;
 };
 
 class ReadFailException : public std::exception {

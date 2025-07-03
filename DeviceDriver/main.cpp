@@ -34,8 +34,31 @@ public:
 			.WillRepeatedly(Return(value));
 	}
 
-	FlashMemoryDeviceMock hardware;
+	void writeTest(int writeValue, int address) {
+		setReadSuccessCase(EMPTY_DATA, address);
+		driver.write(address, writeValue);
+
+		setReadSuccessCase(writeValue, address);
+		readTest(writeValue, address);
+	}
+
+	void writeFailTest(int writeValue, int address) {
+		try {
+			setReadSuccessCase(0x10, address);
+			driver.write(address, writeValue);
+
+			setReadSuccessCase(writeValue, address);
+			readTest(writeValue, address);
+		}
+		catch (WriteFailException& e) {
+			EXPECT_EQ("already writed data", e.what());
+		}
+	}
+
+	NiceMock<FlashMemoryDeviceMock> hardware;
 	DeviceDriver driver;
+
+	constexpr static int EMPTY_DATA = 0xFF;
 };
 
 TEST_F(DeviceDriverFixture, ReadFromHW_0x00_0x41) {
@@ -71,28 +94,15 @@ TEST_F(DeviceDriverFixture, ReadFromHW_Fail) {
 TEST_F(DeviceDriverFixture, WriteToHw) {
 	int address = 0x00;
 	int writeValue = 0x4;
-	
-	setReadSuccessCase(0xFF, address);
-	driver.write(address, writeValue);
 
-	setReadSuccessCase(writeValue, address);
-	readTest(writeValue, address);
+	writeTest(writeValue, address);
 }
 
 TEST_F(DeviceDriverFixture, WriteToHw_Fail_Already_Writed_Data) {
 	int address = 0x00;
 	int writeValue = 0x4;
 
-	try {
-		setReadSuccessCase(0x10, address);
-		driver.write(address, writeValue);
-
-		setReadSuccessCase(writeValue, address);
-		readTest(writeValue, address);
-	}
-	catch (WriteFailException& e) {
-		EXPECT_EQ("already writed data", e.what());
-	}
+	writeFailTest(writeValue, address);
 }
 
 int main() {

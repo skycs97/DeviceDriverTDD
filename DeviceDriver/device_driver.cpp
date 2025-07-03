@@ -23,11 +23,17 @@ int DeviceDriver::read(long address)
 void DeviceDriver::write(long address, int writeData)
 {
     int readData = read(address);
-    if (readData != 0xFF) {
+
+    if (isWriteable(readData) == false) {
         throw WriteFailException();
     }
 
      m_hardware->write(address, (unsigned char)writeData);
+}
+
+bool DeviceDriver::isWriteable(int readData)
+{
+    return readData == EMPTY_DATA;
 }
 
 const char* ReadFailException::what() const
