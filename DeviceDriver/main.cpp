@@ -43,6 +43,23 @@ TEST_F(DeviceDriverFixture, ReadFromHW_0x04_0x42) {
 	readTest(expected, address);
 }
 
+TEST_F(DeviceDriverFixture, ReadFromHW_Fail) {
+	int address = 0x04;
+	int expected = 0x42;
+
+	EXPECT_CALL(hardware, read(address))
+		.WillOnce(Return(0x41))
+		.WillRepeatedly(Return(expected));
+
+	try {
+		readTest(expected, address);
+		FAIL();
+	}
+	catch (ReadFailException& e) {
+		EXPECT_EQ("data is invalid", e.what());
+	}
+}
+
 int main() {
 	::testing::InitGoogleMock();
 	return RUN_ALL_TESTS();
