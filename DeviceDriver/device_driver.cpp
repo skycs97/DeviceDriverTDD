@@ -20,11 +20,11 @@ int DeviceDriver::read(long address)
     return data;
 }
 
-void DeviceDriver::write(long address, int data)
+void DeviceDriver::write(long address, int writeData)
 {
-    int readVal = read(address);
+    int readData = read(address);
 
-    m_hardware->write(address, (unsigned char)data);
+    m_hardware->write(address, (unsigned char)writeData);
 }
 
 const char* ReadFailException::what() const
