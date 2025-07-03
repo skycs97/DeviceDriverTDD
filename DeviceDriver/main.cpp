@@ -108,27 +108,32 @@ TEST_F(DeviceDriverFixture, WriteToHw_Fail_Already_Writed_Data) {
 
 TEST_F(DeviceDriverFixture, ReadApplication) {
 	Application app{ &driver };
-	
-	for (int i = 0; i < 0x10; ++i) {
+	int startAddr = 0;
+	int endAddr = 0x10;
+	for (int i = startAddr; i < endAddr; ++i) {
 		setReadSuccessCase(i+1, i);
 	}
 
-	app.readAndPrint(0x00, 0x10);
+	app.readAndPrint(startAddr, endAddr);
 }
 
 TEST_F(DeviceDriverFixture, WriteAll) {
 	Application app{ &driver };
-	
-	for (int i = 0; i < 4; ++i) {
-		setReadSuccessCase(0xFF, i);
+	int writeVal = 24;
+	int startAddr = 0;
+	int endAddr = 4;
+
+	for (int i = startAddr; i < endAddr; ++i) {
+		setReadSuccessCase(EMPTY_DATA, i);
 	}
 
-	app.writeAll(24);
-	for (int i = 0; i < 4; ++i) {
-		setReadSuccessCase(24, i);
+	app.writeAll(writeVal);
+
+	for (int i = startAddr; i < endAddr; ++i) {
+		setReadSuccessCase(writeVal, i);
 	}
 
-	app.readAndPrint(0x0, 0x4);
+	app.readAndPrint(startAddr, endAddr);
 }
 int main() {
 	::testing::InitGoogleMock();

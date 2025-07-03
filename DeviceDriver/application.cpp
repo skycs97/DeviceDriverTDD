@@ -4,18 +4,26 @@ Application::Application(DeviceDriver* driver) : driver{driver}
 {
 }
 
-void Application::readAndPrint(int start, int end)
+void Application::readAndPrint(int startAddr, int endAddr)
 {
-	std::cout << "\nprint Values (" << start << " ~ " << end << ")\n";
-	for (int addr = start; addr < end; ++addr) {
+	std::cout << "\nprint Values (" << startAddr << " ~ " << endAddr << ")\n";
+
+	for (int addr = startAddr; addr < endAddr; ++addr) {
 		int data = driver->read(addr);
-		std::cout << addr << " : " << data << "\n";
+		printData(addr, data);
 	}
 }
 
-void Application::writeAll(int value)
+void Application::printData(int addr, int data)
 {
-	for (int i = 0; i < 4; ++i) {
-		driver->write(i, value);
+	std::cout << addr << " : " << data << "\n";
+}
+
+void Application::writeAll(int writeValue)
+{
+	constexpr static int writeAllStartAddr = 0x0;
+	constexpr static int writeAllEndAddr = 0x4;
+	for (int i = writeAllStartAddr; i < writeAllEndAddr; ++i) {
+		driver->write(i, writeValue);
 	}
 }
