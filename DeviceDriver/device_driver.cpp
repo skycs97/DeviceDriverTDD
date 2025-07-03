@@ -1,4 +1,10 @@
 #include "device_driver.h"
+#include "exception"
+
+class ReadFailException : public std::exception {
+public:
+    ReadFailException(const char* const Msg) : std::exception{Msg}{}
+};
 
 DeviceDriver::DeviceDriver(FlashMemoryDevice* hardware) : m_hardware(hardware)
 {
@@ -6,8 +12,15 @@ DeviceDriver::DeviceDriver(FlashMemoryDevice* hardware) : m_hardware(hardware)
 
 int DeviceDriver::read(long address)
 {
+    int data = (int)(m_hardware->read(address));
+    int before = data;
+    for (int i = 0; i < 4; ++i) {
+        if (before != data) {
+            throw ReadFailException("data is invalid");
+        }
+    }
     // TODO: implement this method properly
-    return (int)(m_hardware->read(address));
+    return data;
 }
 
 void DeviceDriver::write(long address, int data)
