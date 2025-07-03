@@ -12,3 +12,10 @@ void Application::readAndPrint(int start, int end)
 		std::cout << addr << " : " << data << "\n";
 	}
 }
+
+void Application::writeAll(int value)
+{
+	for (int i = 0; i < 4; ++i) {
+		driver->write(i, value);
+	}
+}

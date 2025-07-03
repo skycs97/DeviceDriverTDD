@@ -115,6 +115,21 @@ TEST_F(DeviceDriverFixture, ReadApplication) {
 
 	app.readAndPrint(0x00, 0x10);
 }
+
+TEST_F(DeviceDriverFixture, WriteAll) {
+	Application app{ &driver };
+	
+	for (int i = 0; i < 4; ++i) {
+		setReadSuccessCase(0xFF, i);
+	}
+
+	app.writeAll(24);
+	for (int i = 0; i < 4; ++i) {
+		setReadSuccessCase(24, i);
+	}
+
+	app.readAndPrint(0x0, 0x4);
+}
 int main() {
 	::testing::InitGoogleMock();
 	return RUN_ALL_TESTS();
