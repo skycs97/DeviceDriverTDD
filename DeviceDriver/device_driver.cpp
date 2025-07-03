@@ -14,12 +14,13 @@ int DeviceDriver::read(long address)
 {
     int data = (int)(m_hardware->read(address));
     int before = data;
-    for (int i = 0; i < 4; ++i) {
+
+    for (int i = 0; i < READ_REPEAT_COUNT_FOR_CHECK; ++i) {
         if (before != data) {
             throw ReadFailException("data is invalid");
         }
     }
-    // TODO: implement this method properly
+
     return data;
 }
 

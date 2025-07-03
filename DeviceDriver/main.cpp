@@ -9,16 +9,38 @@ public:
 	MOCK_METHOD(void, write, (long, unsigned char), (override));
 };
 
-TEST(DeviceDriver, ReadFromHW) {
-	// TODO : replace hardware with a Test Double
+class DeviceDriverFixture : public Test {
+public:
+	DeviceDriverFixture() : driver{ &hardware } {
+
+	}
+	void readTest(int expected, int address) {
+		int data = driver.read(address);
+		EXPECT_EQ(expected, data);
+	}
+
 	FlashMemoryDeviceMock hardware;
-	DeviceDriver driver{ &hardware };
+	DeviceDriver driver;
+};
 
-	EXPECT_CALL(hardware, read(0xFF))
-		.WillRepeatedly(Return(0x41));
+TEST_F(DeviceDriverFixture, ReadFromHW_0x00_0x41) {
+	int address = 0x00;
+	int expected = 0x41;
 
-	int data = driver.read(0xFF);
-	EXPECT_EQ(0x41, data);
+	EXPECT_CALL(hardware, read(address))
+		.WillRepeatedly(Return(expected));
+
+	readTest(expected, address);
+}
+
+TEST_F(DeviceDriverFixture, ReadFromHW_0x04_0x42) {
+	int address = 0x04;
+	int expected = 0x42;
+
+	EXPECT_CALL(hardware, read(address))
+		.WillRepeatedly(Return(expected));
+
+	readTest(expected, address);
 }
 
 int main() {

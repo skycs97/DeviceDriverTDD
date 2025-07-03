@@ -10,4 +10,6 @@ public:
 
 protected:
     FlashMemoryDevice* m_hardware;
+private:
+    constexpr static int READ_REPEAT_COUNT_FOR_CHECK = 4;
 };
