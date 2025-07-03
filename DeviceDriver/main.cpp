@@ -68,6 +68,20 @@ TEST_F(DeviceDriverFixture, ReadFromHW_Fail) {
 	readFailTest(expected, address);
 }
 
+TEST_F(DeviceDriverFixture, WriteToHw) {
+	int address = 0x00;
+	int writeValue = 0x4;
+
+	EXPECT_CALL(hardware, write)
+		.Times(1);
+	
+	setReadSuccessCase(0xFF, address);
+	driver.write(address, writeValue);
+
+	setReadSuccessCase(writeValue, address);
+	readTest(writeValue, address);
+}
+
 int main() {
 	::testing::InitGoogleMock();
 	return RUN_ALL_TESTS();
