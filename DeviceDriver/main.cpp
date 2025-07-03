@@ -1,5 +1,6 @@
 #include "gmock/gmock.h"
 #include "device_driver.h"
+#include "application.h"
 
 using namespace testing;
 
@@ -105,6 +106,35 @@ TEST_F(DeviceDriverFixture, WriteToHw_Fail_Already_Writed_Data) {
 	writeFailTest(writeValue, address);
 }
 
+TEST_F(DeviceDriverFixture, ReadApplication) {
+	Application app{ &driver };
+	int startAddr = 0;
+	int endAddr = 0x10;
+	for (int i = startAddr; i < endAddr; ++i) {
+		setReadSuccessCase(i+1, i);
+	}
+
+	app.readAndPrint(startAddr, endAddr);
+}
+
+TEST_F(DeviceDriverFixture, WriteAll) {
+	Application app{ &driver };
+	int writeVal = 24;
+	int startAddr = 0;
+	int endAddr = 4;
+
+	for (int i = startAddr; i < endAddr; ++i) {
+		setReadSuccessCase(EMPTY_DATA, i);
+	}
+
+	app.writeAll(writeVal);
+
+	for (int i = startAddr; i < endAddr; ++i) {
+		setReadSuccessCase(writeVal, i);
+	}
+
+	app.readAndPrint(startAddr, endAddr);
+}
 int main() {
 	::testing::InitGoogleMock();
 	return RUN_ALL_TESTS();
